@@ -1,0 +1,26 @@
+{
+    "extends": "tslint-eslint-rules",
+    "rules":
+    {
+        "indent": [ true, "spaces", 4 ],
+        "forin": false,
+        "interface-name": [ true, "never-prefix" ],
+        "member-ordering": [ false ],
+        "no-console": [ false ],
+        "no-namespace": [ true, "allow-declarations" ],
+        "trailing-comma":
+        [
+            true,
+            { "multiline": "never", "singleline": "never" }
+        ],
+        "variable-name":
+        [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore"
+        ],
+        "brace-style": [ true, "allman" ],
+        "curly": "all"
+    }
+}
