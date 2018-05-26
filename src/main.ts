@@ -1,5 +1,5 @@
 import * as Profiler from "screeps-profiler";
-import Whole from "Whole";
+import { Whole } from "Whole";
 
 // main point of execution
 function main(): void

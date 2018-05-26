@@ -1,11 +1,11 @@
-import Official from "official/Official";
-import Unit from "Unit";
+import { Official } from "official/Official";
+import { Unit } from "Unit";
 
 /**
  * Makes all the high-level decisions of the AI as a Whole and facilitates
  * communication between each Unit.
  */
-export default class Whole
+export class Whole
 {
     /** Contains each Unit, each of which controls a single room. */
     private units: { [roomName: string]: Unit };

@@ -1,10 +1,10 @@
-import Official from "official/Official";
-import Unit from "Unit";
+import { Official } from "official/Official";
+import { Unit } from "Unit";
 
 /**
  * Manages a source to be mined.
  */
-export default class MineOfficial extends Official
+export class MineOfficial extends Official
 {
     /** Source managed by this MineOfficial. */
     public readonly source: Source;

@@ -1,9 +1,9 @@
-import Unit from "Unit";
+import { Unit } from "Unit";
 
 /**
  * Controls a single object or structure in a room.
  */
-export default abstract class Official
+export abstract class Official
 {
     /** Unit that this Official belongs to. */
     public readonly unit: Unit;

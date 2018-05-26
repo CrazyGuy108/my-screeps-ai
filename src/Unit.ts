@@ -1,12 +1,12 @@
-import MineOfficial from "official/MineOfficial";
-import SpawnOfficial from "official/SpawnOfficial";
-import Whole from "Whole";
+import { MineOfficial } from "official/MineOfficial";
+import { SpawnOfficial } from "official/SpawnOfficial";
+import { Whole } from "Whole";
 
 /**
  * Controls a single room, while using the Whole to communicate with other
  * nearby Units.
  */
-export default class Unit
+export class Unit
 {
     /** Facilitates communication between other Units. */
     public readonly whole: Whole;

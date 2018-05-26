@@ -1,10 +1,10 @@
-import Official from "official/Official";
-import Unit from "Unit";
+import { Official } from "official/Official";
+import { Unit } from "Unit";
 
 /**
  * Controls a spawn in a Unit to handle storage and spawning actions.
  */
-export default class SpawnOfficial extends Official
+export class SpawnOfficial extends Official
 {
     /** Spawn managed by this SpawnOfficial. */
     public readonly spawn: StructureSpawn;
