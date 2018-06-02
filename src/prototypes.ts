@@ -6,7 +6,17 @@ Object.defineProperty(Creep.prototype, "home",
         {
             // unpack home from memory
             const home = Game.rooms[this.memory.home];
-            this._home = home ? home : null;
+            if (!home)
+            {
+                // creep's previous home lost visibility!
+                // reassign to current room
+                this._home = this.room;
+                this.memory.home = this.room.name;
+            }
+            else
+            {
+                this._home = home;
+            }
         }
         return this._home;
     },

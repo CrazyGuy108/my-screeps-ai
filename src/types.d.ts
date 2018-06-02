@@ -8,8 +8,8 @@ interface Creep
 {
     /** Mission currently being executed. */
     mission: Mission | null,
-    /** Creep's home room. Homes can lose visibility. */
-    home: Room | null
+    /** Creep's home room. If not in memory, reassigned to current room.*/
+    home: Room
 }
 
 /**

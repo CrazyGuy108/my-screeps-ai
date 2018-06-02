@@ -64,15 +64,8 @@ export class MineOfficial extends Official
         }
         else
         {
-            // FIXME: put this behavior in Creep.prototype.home so it's never
-            //  null?
-            if (!creep.home)
-            {
-                // creep is homeless!
-                // assign it to its current room
-                creep.home = creep.room;
-            }
-
+            // find something to do with the harvested energy
+            // for now: deliver to spawn/extensions
             // find the first storage area back home
             const storages = creep.home.find(FIND_MY_STRUCTURES,
             {
