@@ -43,8 +43,7 @@ export class MineOfficial extends Official
         // request a new creep if we don't have enough
         if (creepCount < this.maxWorkers)
         {
-            this.unit.requestCreep([ WORK, CARRY, MOVE ],
-                { home: this.room.name, targetId: this.source.id });
+            this.unit.requestCreep([ WORK, CARRY, MOVE ], this.source);
         }
     }
 

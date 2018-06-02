@@ -1,42 +1,112 @@
 import { Official } from "official/Official";
 import { Unit } from "Unit";
 
+/** Represents a request to spawn a certain creep. */
+type CreepRequest =
+{
+    /** Creep's body. */
+    body: BodyPartConstant[],
+    /**
+     * ID of the creep's target RoomObject. Used to identify which Official it
+     * belongs to.
+     */
+    targetId: string | null,
+    /** Target of the creep. */
+    target: RoomObject | null,
+    /** Index in the SpawnOfficial's creepQueue. */
+    index: number
+};
+
 /**
- * Controls a spawn in a Unit to handle storage and spawning actions.
+ * Coordinates spawn actions in a Unit.
  */
 export class SpawnOfficial extends Official
 {
-    /** Spawn managed by this SpawnOfficial. */
-    public readonly spawn: StructureSpawn;
+
+    /** Spawns managed by this SpawnOfficial. */
+    public readonly spawns: StructureSpawn[];
+    /** Requested creeps. */
+    private readonly creepQueue: CreepRequest[];
 
     /**
      * Creates a SpawnOfficial.
      *
      * @param unit Unit that this SpawnOfficial belongs to.
-     * @param spawn Spawn managed by this SpawnOfficial.
      */
-    constructor(unit: Unit, spawn: StructureSpawn)
+    constructor(unit: Unit)
     {
         super(unit);
-        this.spawn = spawn;
+        this.spawns = [];
+        this.creepQueue = [];
     }
 
     public run(): void
     {
+        // early return: no spawns to use and/or no creeps to spawn
+        if (!this.spawns.length || !this.creepQueue.length)
+        {
+            return;
+        }
+
+        // go through every available spawn
+        this.spawns.filter((spawn) => !spawn.spawning).forEach((spawn) =>
+        {
+            // prioritize the creep whose target is closest to the spawn
+            // FIXME: doesn't consider other spawns that could be closer
+            const request = _.min(this.creepQueue, (req) =>
+                req.target ?
+                    spawn.pos.getRangeTo(req.target)
+                    // creeps without targets are lowest priority
+                    : Infinity);
+
+            // generate a name for the creep
+            // FIXME: fails if two creeps are spawned in the same room at the
+            //  same time
+            const name = `${this.room.name}-${Game.time}`;
+
+            // spawn the creep
+            const error = spawn.spawnCreep(request.body, name,
+            {
+                memory:
+                {
+                    home: this.room.name,
+                    targetId: request.targetId
+                }
+            });
+
+            // if successfully spawned, the request has been processed and can
+            //  be removed
+            if (error === OK)
+            {
+                this.creepQueue.splice(request.index, 1);
+            }
+        });
     }
 
     /**
-     * Requests a creep to be spawned if not currently busy.
+     * Adds a new spawn to be controlled.
+     */
+    public addSpawn(spawn: StructureSpawn): void
+    {
+        this.spawns.push(spawn);
+    }
+
+    /**
+     * Requests a creep to be spawned. Note that other creeps may take priority.
      *
      * @param body Body of the creep.
-     * @param name Name of the creep.
-     * @param memory Creep's memory.
-     *
-     * @returns True if not able to spawn, false otherwise.
+     * @param target Target object. Used to identify the Official it belongs to.
      */
-    public spawnCreep(body: BodyPartConstant[], name: string,
-        memory: CreepMemory): boolean
+    public requestCreep(body: BodyPartConstant[], target: RoomObject | null):
+        void
     {
-        return this.spawn.spawnCreep(body, name, { memory: memory }) !== OK;
+        this.creepQueue.push(
+        {
+            body: body,
+            // every RoomObject should have an id except flags
+            targetId: target ? (target as any).id || null : null,
+            target: target,
+            index: this.creepQueue.length
+        });
     }
 }

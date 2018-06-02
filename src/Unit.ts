@@ -14,8 +14,8 @@ export class Unit
     public readonly room: Room;
     /** MineOfficials controlled by this Unit. */
     private readonly mineOfficials: MineOfficial[];
-    /** SpawnOfficials controlled by this Unit. */
-    private readonly spawnOfficials: SpawnOfficial[];
+    /** SpawnOfficial controlled by this Unit. */
+    private readonly spawnOfficial: SpawnOfficial;
 
     /**
      * Creates a Unit.
@@ -28,7 +28,7 @@ export class Unit
         this.whole = whole;
         this.room = room;
         this.mineOfficials = [];
-        this.spawnOfficials = [];
+        this.spawnOfficial = new SpawnOfficial(this);
     }
 
     /**
@@ -49,10 +49,7 @@ export class Unit
             mine.run();
         });
 
-        _.forEach(this.spawnOfficials, (spawn) =>
-        {
-            spawn.run();
-        });
+        this.spawnOfficial.run();
     }
 
     /**
@@ -76,23 +73,19 @@ export class Unit
      */
     public addSpawn(spawn: StructureSpawn): void
     {
-        this.spawnOfficials.push(new SpawnOfficial(this, spawn));
+        this.spawnOfficial.addSpawn(spawn);
     }
 
     /**
      * Requests a creep to be spawned.
      *
      * @param body Body of the creep.
-     * @param memory Creep's memory.
+     * @param target Target object. Used to identify the Official it belongs to.
      */
-    public requestCreep(body: BodyPartConstant[], memory: CreepMemory): void
+    public requestCreep(body: BodyPartConstant[], target: RoomObject | null):
+        void
     {
-        // generate a (hopefully) unique name
-        // FIXME: fails when two spawns try to spawn a creep at the same time
-        const name = Game.time.toString();
-
-        // try each spawn, stopping at the one that is free
-        _.forEach(this.spawnOfficials,
-            (spawn) => spawn.spawnCreep(body, name, memory));
+        // delegate to the Unit's SpawnOfficial
+        this.spawnOfficial.requestCreep(body, target);
     }
 }
