@@ -36,8 +36,12 @@ export class Whole
             // find all sources in that room
             _.forEach(room.find(FIND_SOURCES), (source) =>
             {
-                // create a MineOfficial to manage that source
-                this.officials[source.id] = unit.addMine(source);
+                // for now, avoid sources that are currently guarded
+                if (!source.pos.findInRange(FIND_HOSTILE_CREEPS, 1).length)
+                {
+                    // create a MineOfficial to manage that source
+                    this.officials[source.id] = unit.addMine(source);
+                }
             });
         });
 
