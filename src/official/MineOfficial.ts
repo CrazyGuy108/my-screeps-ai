@@ -28,7 +28,7 @@ export class MineOfficial extends Official
     {
         // run all creep actions
         let creepCount = 0;
-        _.forEach(this.creeps, (creep) =>
+        this.creeps.forEach((creep) =>
         {
             this.creepActions(creep);
 

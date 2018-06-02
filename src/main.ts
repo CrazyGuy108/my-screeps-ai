@@ -15,7 +15,7 @@ function main(): void
     // automatically delete memory of missing creeps
     _.forOwn(Memory.creeps, (mem, name) =>
     {
-        if (name && !Game.creeps.hasOwnProperty(name as string))
+        if (name && !Game.creeps.hasOwnProperty(name))
         {
             delete Memory.creeps[name];
         }

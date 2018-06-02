@@ -34,7 +34,7 @@ export class Whole
             this.units[roomName as string] = unit;
 
             // find all sources in that room
-            _.forEach(room.find(FIND_SOURCES), (source) =>
+            room.find(FIND_SOURCES).forEach((source) =>
             {
                 // for now, avoid sources that are currently guarded
                 if (!source.pos.findInRange(FIND_HOSTILE_CREEPS, 1).length)

@@ -44,7 +44,7 @@ export class Unit
      */
     public run(): void
     {
-        _.forEach(this.mineOfficials, (mine) =>
+        this.mineOfficials.forEach((mine) =>
         {
             mine.run();
         });
