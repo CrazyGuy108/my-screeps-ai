@@ -1,3 +1,4 @@
+import "prototypes";
 import * as Profiler from "screeps-profiler";
 import { Whole } from "Whole";
 
@@ -9,7 +10,7 @@ function main(): void
     // initialize everything
     whole.init();
 
-    // run all Unit actions
+    // run required actions
     whole.run();
 
     // automatically delete memory of missing creeps
@@ -22,6 +23,7 @@ function main(): void
     });
 }
 
+// enable screeps-profiler
 Profiler.enable();
 
 export function loop(): void
