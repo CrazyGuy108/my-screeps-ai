@@ -82,8 +82,7 @@ export class Unit
      * @param body Body of the creep.
      * @param target Target object. Used to identify the Official it belongs to.
      */
-    public requestCreep(body: BodyPartConstant[], target: RoomObject | null):
-        void
+    public requestCreep(body: BodyPartConstant[], target?: RoomObject): void
     {
         // delegate to the Unit's SpawnOfficial
         this.spawnOfficial.requestCreep(body, target);

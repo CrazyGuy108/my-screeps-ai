@@ -10,9 +10,9 @@ type CreepRequest =
      * ID of the creep's target RoomObject. Used to identify which Official it
      * belongs to.
      */
-    targetId: string | null,
+    targetId?: string,
     /** Target of the creep. */
-    target: RoomObject | null,
+    target?: RoomObject,
     /** Index in the SpawnOfficial's creepQueue. */
     index: number
 };
@@ -61,7 +61,8 @@ export class SpawnOfficial extends Official
 
             // generate a name for the creep
             // FIXME: fails if two creeps are spawned in the same room at the
-            //  same time
+            //  same time (unlikely)
+            // could use a Memory.counter to guarantee a unique identifier
             const name = `${this.room.name}-${Game.time}`;
 
             // spawn the creep
@@ -70,7 +71,14 @@ export class SpawnOfficial extends Official
                 memory:
                 {
                     home: this.room.name,
-                    targetId: request.targetId
+                    targetId: request.targetId,
+                    // start out with no goal
+                    goal:
+                    {
+                        id: "null",
+                        isDone: true,
+                        options: {}
+                    }
                 }
             });
 
@@ -97,14 +105,13 @@ export class SpawnOfficial extends Official
      * @param body Body of the creep.
      * @param target Target object. Used to identify the Official it belongs to.
      */
-    public requestCreep(body: BodyPartConstant[], target: RoomObject | null):
-        void
+    public requestCreep(body: BodyPartConstant[], target?: RoomObject): void
     {
         this.creepQueue.push(
         {
             body: body,
             // every RoomObject should have an id except flags
-            targetId: target ? (target as any).id || null : null,
+            targetId: target ? (target as any).id : undefined,
             target: target,
             index: this.creepQueue.length
         });

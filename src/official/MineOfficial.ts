@@ -1,4 +1,7 @@
+import { Goals } from "goal/Goals";
+import { HarvestGoal } from "goal/HarvestGoal";
 import { Official } from "official/Official";
+import { TransferGoal } from "goal/TransferGoal";
 import { Unit } from "Unit";
 
 /**
@@ -36,7 +39,7 @@ export class MineOfficial extends Official
             ++creepCount;
             if (creepCount > this.maxWorkers)
             {
-                creep.memory.targetId = null;
+                creep.memory.targetId = undefined;
             }
         });
 
@@ -54,33 +57,56 @@ export class MineOfficial extends Official
      */
     private creepActions(creep: Creep): void
     {
-        // mine the creep's assigned source
-        if (_.sum(creep.carry) < creep.carryCapacity)
+        // figure out what the creep should do if it has nothing else to do
+        if (creep.isDone)
         {
-            if (creep.harvest(this.source) === ERR_NOT_IN_RANGE)
+            // transfer if full, else harvest
+            if (_.sum(creep.carry) === creep.carryCapacity)
             {
-                creep.moveTo(this.source);
+                // creep has energy to store somewhere back home
+                // find a suitable storage and set a Goal to transfer to it
+                const storage = this.findStorage(creep.home);
+                if (storage)
+                {
+                    creep.goal = Goals.Transfer(storage, RESOURCE_ENERGY);
+                }
+                else
+                {
+                    // TODO: no structures at home so find somewhere else
+                    creep.goal = Goals.Null();
+                }
+            }
+            else
+            {
+                // creep must be empty and needs to fill up with some energy
+                // if the creep was just spawned and doesn't have anything to do
+                //  yet, this will be the first thing it does
+                creep.goal = Goals.Harvest(this.source);
             }
         }
-        else
-        {
-            // find something to do with the harvested energy
-            // for now: deliver to spawn/extensions
-            // find the first storage area back home
-            const storages = creep.home.find(FIND_MY_STRUCTURES,
-            {
-                filter: ((s: StructureExtension | StructureSpawn) =>
-                    (s.structureType === STRUCTURE_EXTENSION ||
-                        s.structureType === STRUCTURE_SPAWN) &&
-                    s.energy < s.energyCapacity) as (s: any) => boolean
-            });
 
-            // if one exists, go to it and transfer energy
-            if (storages[0] && creep.transfer(storages[0], RESOURCE_ENERGY) ===
-                    ERR_NOT_IN_RANGE)
-            {
-                creep.moveTo(storages[0]);
-            }
-        }
+        // do assigned creep actions
+        creep.run();
+    }
+
+    /**
+     * Finds a structure in the given room to store energy.
+     *
+     * @param room Room to find structures in.
+     *
+     * @return A suitable structure to transfer energy to.
+     */
+    private findStorage(room: Room): Structure | undefined
+    {
+        // currently just picks the first spawn/extension that needs energy
+        // TODO: prioritize based on other stuff like closeness/need
+        const storages = room.find(FIND_MY_STRUCTURES,
+        {
+            filter: ((s: StructureExtension | StructureSpawn) =>
+                (s.structureType === STRUCTURE_EXTENSION ||
+                    s.structureType === STRUCTURE_SPAWN) &&
+                s.energy < s.energyCapacity) as (s: any) => boolean
+        });
+        return storages[0];
     }
 }
