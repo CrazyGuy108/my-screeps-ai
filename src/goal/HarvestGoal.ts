@@ -1,6 +1,6 @@
 import { Goal } from "goal/Goal";
 
-/** RoomObject types that can be harvested. */
+/** Object types that can be harvested. */
 export type HarvestTarget = Source | Mineral;
 
 /**

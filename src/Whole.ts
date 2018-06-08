@@ -33,6 +33,13 @@ export class Whole
             const unit = new Unit(this, room);
             this.units[roomName as string] = unit;
 
+            // add in the room controller
+            if (room.controller)
+            {
+                this.officials[room.controller.id] =
+                    unit.setController(room.controller);
+            }
+
             // find all sources in that room
             room.find(FIND_SOURCES).forEach((source) =>
             {

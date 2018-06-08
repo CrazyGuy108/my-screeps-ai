@@ -1,32 +1,32 @@
 import { Goal } from "goal/Goal";
 
-/** Object types that can have resources transfered to them. */
-export type TransferTarget = Creep | Structure;
+/** Object types that can have resources withdrawn from them. */
+export type WithdrawTarget = Structure;
 
 /**
- * Transfers a resource to a structure.
+ * Withdraws a resource from a structure.
  */
-export class TransferGoal extends Goal
+export class WithdrawGoal extends Goal
 {
     /** Identification name. */
-    public static readonly id = "transfer";
+    public static readonly id = "withdraw";
     /** Structure to transfer resources to. */
-    private readonly target: TransferTarget;
+    private readonly target: WithdrawTarget;
 
     /**
-     * Creates a TransferGoal.
+     * Creates a WithdrawGoal.
      *
-     * @param target Object to store the resource into.
-     * @param resourceType Type of resource to transfer.
-     * @param amount Amount of resources to transfer, or all available if
+     * @param target Object to withdraw the resource from.
+     * @param resourceType Type of resource to withdraw.
+     * @param amount Amount of resources to withdraw, or all available if
      * undefined.
      */
-    constructor(target: TransferTarget, resourceType: ResourceConstant,
+    constructor(target: WithdrawTarget, resourceType: ResourceConstant,
         amount?: number)
     {
         super(
         {
-            id: TransferGoal.id,
+            id: WithdrawGoal.id,
             isDone: false,
             options:
             {
@@ -41,7 +41,7 @@ export class TransferGoal extends Goal
 
     public run(creep: Creep): void
     {
-        const error = creep.transfer(this.target, this.resourceType,
+        const error = creep.withdraw(this.target, this.resourceType,
                 this.amount);
         if (error === OK)
         {

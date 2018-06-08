@@ -1,3 +1,4 @@
+import { ControllerOfficial } from "official/ControllerOfficial";
 import { MineOfficial } from "official/MineOfficial";
 import { SpawnOfficial } from "official/SpawnOfficial";
 import { Whole } from "Whole";
@@ -12,6 +13,8 @@ export class Unit
     public readonly whole: Whole;
     /** Room to control. */
     public readonly room: Room;
+    /** ControllerOfficial controlled by this Unit. */
+    private controllerOfficial?: ControllerOfficial;
     /** MineOfficials controlled by this Unit. */
     private readonly mineOfficials: MineOfficial[];
     /** SpawnOfficial controlled by this Unit. */
@@ -44,12 +47,30 @@ export class Unit
      */
     public run(): void
     {
+        if (this.controllerOfficial)
+        {
+            this.controllerOfficial.run();
+        }
+
         this.mineOfficials.forEach((mine) =>
         {
             mine.run();
         });
 
         this.spawnOfficial.run();
+    }
+
+    /**
+     * Sets the Unit's controller.
+     *
+     * @param controller Controller to be managed.
+     *
+     * @returns The ControllerOfficial that was created.
+     */
+    public setController(controller: StructureController): ControllerOfficial
+    {
+        this.controllerOfficial = new ControllerOfficial(this, controller);
+        return this.controllerOfficial;
     }
 
     /**

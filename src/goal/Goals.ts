@@ -1,6 +1,8 @@
 import { HarvestTarget, HarvestGoal } from "goal/HarvestGoal";
 import { NullGoal } from "goal/NullGoal";
 import { TransferTarget, TransferGoal } from "goal/TransferGoal";
+import { UpgradeTarget, UpgradeGoal } from "goal/UpgradeGoal";
+import { WithdrawTarget, WithdrawGoal } from "goal/WithdrawGoal";
 
 /**
  * Creates a Goal using options from memory.
@@ -28,6 +30,11 @@ export function createGoal(memory: GoalMemory): Goal
         case TransferGoal.id:
             return Goals.Transfer(target as TransferTarget,
                 options.resourceType as ResourceConstant, options.amount);
+        case UpgradeGoal.id:
+            return Goals.Upgrade(target as UpgradeTarget);
+        case WithdrawGoal.id:
+            return Goals.Withdraw(target as WithdrawTarget,
+                options.resourceType as ResourceConstant, options.amount);
         default:
             console.log(`Invalid goal id "${memory.id}"!`);
             // fallthrough
@@ -42,9 +49,12 @@ export function createGoal(memory: GoalMemory): Goal
  */
 export const Goals =
 {
-    Harvest: _.memoize((target: HarvestTarget) => new HarvestGoal(target)),
-    Null: _.memoize(() => new NullGoal()),
-    Transfer: _.memoize(
-        (target: TransferTarget, resourceType: ResourceConstant,
-            amount?: number) => new TransferGoal(target, resourceType, amount))
+    Harvest: (target: HarvestTarget) => new HarvestGoal(target),
+    // NullGoal has no fields so it can be safely repeatedly returned
+    Null: _.once(() => new NullGoal()),
+    Transfer: (target: TransferTarget, resourceType: ResourceConstant,
+            amount?: number) => new TransferGoal(target, resourceType, amount),
+    Upgrade: (target: UpgradeTarget) => new UpgradeGoal(target),
+    Withdraw: (target: WithdrawTarget, resourceType: ResourceConstant,
+            amount?: number) => new WithdrawGoal(target, resourceType, amount)
 };

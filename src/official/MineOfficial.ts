@@ -65,7 +65,7 @@ export class MineOfficial extends Official
             {
                 // creep has energy to store somewhere back home
                 // find a suitable storage and set a Goal to transfer to it
-                const storage = this.findStorage(creep.home);
+                const storage = this.findStorage(creep.home, RESOURCE_ENERGY);
                 if (storage)
                 {
                     creep.goal = Goals.Transfer(storage, RESOURCE_ENERGY);
@@ -87,26 +87,5 @@ export class MineOfficial extends Official
 
         // do assigned creep actions
         creep.run();
-    }
-
-    /**
-     * Finds a structure in the given room to store energy.
-     *
-     * @param room Room to find structures in.
-     *
-     * @return A suitable structure to transfer energy to.
-     */
-    private findStorage(room: Room): Structure | undefined
-    {
-        // currently just picks the first spawn/extension that needs energy
-        // TODO: prioritize based on other stuff like closeness/need
-        const storages = room.find(FIND_MY_STRUCTURES,
-        {
-            filter: ((s: StructureExtension | StructureSpawn) =>
-                (s.structureType === STRUCTURE_EXTENSION ||
-                    s.structureType === STRUCTURE_SPAWN) &&
-                s.energy < s.energyCapacity) as (s: any) => boolean
-        });
-        return storages[0];
     }
 }
