@@ -1,6 +1,6 @@
+import { BaseOfficial } from "official/BaseOfficial";
 import { ControllerOfficial } from "official/ControllerOfficial";
 import { MineOfficial } from "official/MineOfficial";
-import { SpawnOfficial } from "official/SpawnOfficial";
 import { Whole } from "Whole";
 
 /**
@@ -14,11 +14,11 @@ export class Unit
     /** Room to control. */
     public readonly room: Room;
     /** ControllerOfficial controlled by this Unit. */
-    private controllerOfficial?: ControllerOfficial;
+    private controller?: ControllerOfficial;
     /** MineOfficials controlled by this Unit. */
-    private readonly mineOfficials: MineOfficial[];
+    private readonly mines: MineOfficial[];
     /** SpawnOfficial controlled by this Unit. */
-    private readonly spawnOfficial: SpawnOfficial;
+    private readonly base: BaseOfficial;
 
     /**
      * Creates a Unit.
@@ -30,8 +30,8 @@ export class Unit
     {
         this.whole = whole;
         this.room = room;
-        this.mineOfficials = [];
-        this.spawnOfficial = new SpawnOfficial(this);
+        this.mines = [];
+        this.base = new BaseOfficial(this);
     }
 
     /**
@@ -47,17 +47,17 @@ export class Unit
      */
     public run(): void
     {
-        if (this.controllerOfficial)
+        if (this.controller)
         {
-            this.controllerOfficial.run();
+            this.controller.run();
         }
 
-        this.mineOfficials.forEach((mine) =>
+        this.mines.forEach((mine) =>
         {
             mine.run();
         });
 
-        this.spawnOfficial.run();
+        this.base.run();
     }
 
     /**
@@ -69,8 +69,8 @@ export class Unit
      */
     public setController(controller: StructureController): ControllerOfficial
     {
-        this.controllerOfficial = new ControllerOfficial(this, controller);
-        return this.controllerOfficial;
+        this.controller = new ControllerOfficial(this, controller);
+        return this.controller;
     }
 
     /**
@@ -82,9 +82,9 @@ export class Unit
      */
     public addMine(source: Source): MineOfficial
     {
-        const mineOfficial = new MineOfficial(this, source);
-        this.mineOfficials.push(mineOfficial);
-        return mineOfficial;
+        const mine = new MineOfficial(this, source);
+        this.mines.push(mine);
+        return mine;
     }
 
     /**
@@ -94,7 +94,7 @@ export class Unit
      */
     public addSpawn(spawn: StructureSpawn): void
     {
-        this.spawnOfficial.addSpawn(spawn);
+        this.base.addSpawn(spawn);
     }
 
     /**
@@ -105,7 +105,7 @@ export class Unit
      */
     public requestCreep(body: BodyPartConstant[], target?: RoomObject): void
     {
-        // delegate to the Unit's SpawnOfficial
-        this.spawnOfficial.requestCreep(body, target);
+        // delegate to the Unit's base
+        this.base.requestCreep(body, target);
     }
 }

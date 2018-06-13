@@ -55,9 +55,7 @@ export class Whole
         // find all spawns
         _.forOwn(Game.spawns, (spawn) =>
         {
-            // assign the Unit's SpawnOfficial to that spawn
-            // doesn't need to be added to this.officials because SpawnOfficials
-            //  currently don't need to control creeps
+            // assign the Unit's base to that spawn
             this.units[spawn.room.name].addSpawn(spawn);
         });
 
