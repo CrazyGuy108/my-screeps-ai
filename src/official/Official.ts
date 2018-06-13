@@ -87,9 +87,9 @@ export abstract class Official
             // find the best EnergyStorage
             return _.min(energyStorages, (s: EnergyStorage) =>
                 favorEmpty
-                    // storage that is the most empty
+                    // has the least empty
                     ? s.energy
-                    // storage that has the most energy
+                    // has the most energy
                     : s.energyCapacity - s.energy
             );
         }
