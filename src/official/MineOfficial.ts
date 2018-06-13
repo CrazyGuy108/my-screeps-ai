@@ -24,7 +24,7 @@ export class MineOfficial extends Official
     {
         super(unit);
         this.source = source;
-        this.maxWorkers = 1;
+        this.maxWorkers = this.getOpenSquares();
     }
 
     public run(): void
@@ -43,9 +43,9 @@ export class MineOfficial extends Official
             }
         });
 
-        // request a new creep if we don't have enough
         if (creepCount < this.maxWorkers)
         {
+            // not enough creeps!
             this.unit.requestCreep([ WORK, CARRY, MOVE ], this.source);
         }
     }
@@ -87,5 +87,27 @@ export class MineOfficial extends Official
 
         // do assigned creep actions
         creep.run();
+    }
+
+    /**
+     * Finds the amount of walkable tiles around the source.
+     */
+    private getOpenSquares(): number
+    {
+        // look at all adjacent tiles
+        const sourcePos = this.source.pos;
+        let count = 0;
+        for (let x = -1; x < 2; ++x)
+        {
+            for (let y = -1; y < 2; ++y)
+            {
+                if ((x || y) && Game.map.getTerrainAt(sourcePos.x + x,
+                        sourcePos.y + y, sourcePos.roomName) !== "wall")
+                {
+                    ++count;
+                }
+            }
+        }
+        return count;
     }
 }
