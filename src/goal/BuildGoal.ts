@@ -63,8 +63,15 @@ export class BuildGoal extends Goal
             {
                 creep.done();
             }
+            else if (this.method === "repair" &&
+                (this.target as Structure).hits >=
+                    (this.target as Structure).hitsMax)
+            {
+                // trying to repair a structure that is already repaired
+                creep.done();
+            }
         }
-        if (error === ERR_NOT_ENOUGH_RESOURCES)
+        else if (error === ERR_NOT_ENOUGH_RESOURCES)
         {
             // the creep is now empty so we're done here
             creep.done();
