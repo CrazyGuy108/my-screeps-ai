@@ -1,5 +1,6 @@
 import { Goals } from "goal/Goals";
 import { Official } from "official/Official";
+import { Priority } from "Priority";
 import { Unit } from "Unit";
 
 export class ControllerOfficial extends Official
@@ -42,7 +43,8 @@ export class ControllerOfficial extends Official
         // request a new creep if we don't have enough
         if (creepCount < this.maxUpgraders)
         {
-            this.unit.requestCreep([ WORK, CARRY, MOVE ], this.controller);
+            this.unit.requestCreep([WORK, CARRY, MOVE], Priority.MEDIUM,
+                this.controller);
         }
     }
 

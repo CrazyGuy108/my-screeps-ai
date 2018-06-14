@@ -1,5 +1,6 @@
 import { Goals } from "goal/Goals";
 import { Official } from "official/Official";
+import { Priority } from "Priority";
 import { Unit } from "Unit";
 
 /** Represents a request to spawn a certain creep. */
@@ -25,8 +26,8 @@ export class BaseOfficial extends Official
 {
     /** Spawns managed by this BaseOfficial. */
     public readonly spawns: StructureSpawn[];
-    /** Requested creeps. */
-    private readonly creepQueue: CreepRequest[];
+    /** Requested creeps for each priority level. */
+    private readonly creepQueues: { [priority: number]: CreepRequest[] };
     /** Max amount of workers. */
     private readonly maxWorkers: number;
 
@@ -39,7 +40,7 @@ export class BaseOfficial extends Official
     {
         super(unit);
         this.spawns = [];
-        this.creepQueue = [];
+        this.creepQueues = {};
         this.maxWorkers = 3;
     }
 
@@ -52,11 +53,11 @@ export class BaseOfficial extends Official
         // TODO: how to let more essential creeps take priority?
         if (this.creeps.length < this.maxWorkers)
         {
-            this.requestCreep([WORK, CARRY, MOVE]);
+            this.requestCreep([WORK, CARRY, MOVE], Priority.LOW);
         }
 
         // early return: no spawns to use and/or no creeps to spawn
-        if (!this.spawns.length || !this.creepQueue.length)
+        if (!this.spawns.length || !_.isEmpty(this.creepQueues))
         {
             return;
         }
@@ -78,18 +79,24 @@ export class BaseOfficial extends Official
      * Requests a creep to be spawned. Note that other creeps may take priority.
      *
      * @param body Body of the creep.
+     * @param priority Spawn priority.
      * @param target Target object. Used to identify the Official it belongs to.
      * If omitted, defaults to this BaseOfficial (aka its room name).
      */
-    public requestCreep(body: BodyPartConstant[], target?: RoomObject): void
+    public requestCreep(body: BodyPartConstant[], priority: Priority,
+        target?: RoomObject): void
     {
-        this.creepQueue.push(
+        if (!this.creepQueues[priority])
+        {
+            this.creepQueues[priority] = [];
+        }
+        this.creepQueues[priority].push(
         {
             body: body,
             // every RoomObject should have an id except flags
             targetId: target ? (target as any).id : this.room.name,
             target: target,
-            index: this.creepQueue.length
+            index: this.creepQueues[priority].length
         });
     }
 
@@ -159,9 +166,12 @@ export class BaseOfficial extends Official
      */
     private spawnActions(spawn: StructureSpawn): void
     {
+        // get the highest requested priority
+        const priority = Math.min((this.creepQueues as any).keys());
+
         // prioritize the creep whose target is closest to the spawn
         // FIXME: doesn't consider other spawns that could be closer
-        const request = _.min(this.creepQueue, (req) =>
+        const request = _.min(this.creepQueues[priority], (req) =>
             req.target ?
                 spawn.pos.getRangeTo(req.target)
                 // creeps without targets are lowest priority
@@ -194,7 +204,12 @@ export class BaseOfficial extends Official
         //  be removed
         if (error === OK)
         {
-            this.creepQueue.splice(request.index, 1);
+            this.creepQueues[priority].splice(request.index, 1);
+            if (_.isEmpty(this.creepQueues[priority]))
+            {
+                // all creeps of this priority have been spawned
+                delete this.creepQueues[priority];
+            }
         }
     }
 }

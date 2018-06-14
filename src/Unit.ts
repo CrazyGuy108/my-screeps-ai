@@ -1,6 +1,7 @@
 import { BaseOfficial } from "official/BaseOfficial";
 import { ControllerOfficial } from "official/ControllerOfficial";
 import { MineOfficial } from "official/MineOfficial";
+import { Priority } from "Priority";
 import { Whole } from "Whole";
 
 /**
@@ -101,11 +102,14 @@ export class Unit
      * Requests a creep to be spawned.
      *
      * @param body Body of the creep.
+     * @param priority Spawn priority.
      * @param target Target object. Used to identify the Official it belongs to.
+     * If omitted, defaults to the Unit's BaseOfficial.
      */
-    public requestCreep(body: BodyPartConstant[], target?: RoomObject): void
+    public requestCreep(body: BodyPartConstant[], priority: Priority,
+        target?: RoomObject): void
     {
         // delegate to the Unit's base
-        this.base.requestCreep(body, target);
+        this.base.requestCreep(body, priority, target);
     }
 }

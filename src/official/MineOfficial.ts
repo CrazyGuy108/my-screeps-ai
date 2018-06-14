@@ -1,6 +1,7 @@
 import { Goals } from "goal/Goals";
 import { HarvestGoal } from "goal/HarvestGoal";
 import { Official } from "official/Official";
+import { Priority } from "Priority";
 import { TransferGoal } from "goal/TransferGoal";
 import { Unit } from "Unit";
 
@@ -46,7 +47,8 @@ export class MineOfficial extends Official
         if (creepCount < this.maxWorkers)
         {
             // not enough creeps!
-            this.unit.requestCreep([ WORK, CARRY, MOVE ], this.source);
+            this.unit.requestCreep([WORK, CARRY, MOVE], Priority.HIGH,
+                this.source);
         }
     }
 
