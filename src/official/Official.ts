@@ -72,7 +72,7 @@ export abstract class Official
     {
         // currently just picks the first spawn/extension that needs energy
         // TODO: prioritize based on other stuff like closeness/need
-        let storages = room.find(FIND_MY_STRUCTURES);
+        let storages = room.find(FIND_STRUCTURES);
         if (resource === RESOURCE_ENERGY)
         {
             // make sure it's an EnergyStorage
@@ -85,13 +85,15 @@ export abstract class Official
                     s.structureType === STRUCTURE_EXTENSION) as EnergyStorage[];
 
             // find the best EnergyStorage
-            return _.min(energyStorages, (s: EnergyStorage) =>
-                favorEmpty
-                    // has the least empty
-                    ? s.energy
-                    // has the most energy
-                    : s.energyCapacity - s.energy
-            );
+            const f = (s: EnergyStorage) => s.energy;
+            if (favorEmpty)
+            {
+                return _.min(energyStorages, f);
+            }
+            else
+            {
+                return _.max(energyStorages, f);
+            }
         }
         else
         {
