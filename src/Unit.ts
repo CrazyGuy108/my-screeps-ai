@@ -13,12 +13,12 @@ export class Unit
     public readonly whole: Whole;
     /** Room to control. */
     public readonly room: Room;
+    /** BaseOfficial controlled by this Unit. */
+    public readonly base: BaseOfficial;
     /** ControllerOfficial controlled by this Unit. */
     private controller?: ControllerOfficial;
     /** MineOfficials controlled by this Unit. */
     private readonly mines: MineOfficial[];
-    /** SpawnOfficial controlled by this Unit. */
-    private readonly base: BaseOfficial;
 
     /**
      * Creates a Unit.
@@ -30,8 +30,8 @@ export class Unit
     {
         this.whole = whole;
         this.room = room;
-        this.mines = [];
         this.base = new BaseOfficial(this);
+        this.mines = [];
     }
 
     /**

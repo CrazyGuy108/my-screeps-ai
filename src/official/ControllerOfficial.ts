@@ -56,7 +56,7 @@ export class ControllerOfficial extends Official
             if (_.sum(creep.carry) === creep.carryCapacity)
             {
                 // creep is full of energy to use for upgrading
-                creep.goal = Goals.Upgrade(this.controller);
+                creep.goal = Goals.Build(this.controller);
             }
             else
             {

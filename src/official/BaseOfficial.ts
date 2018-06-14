@@ -1,3 +1,4 @@
+import { Goals } from "goal/Goals";
 import { Official } from "official/Official";
 import { Unit } from "Unit";
 
@@ -27,6 +28,8 @@ export class BaseOfficial extends Official
     public readonly spawns: StructureSpawn[];
     /** Requested creeps. */
     private readonly creepQueue: CreepRequest[];
+    /** Max amount of workers. */
+    private readonly maxWorkers: number;
 
     /**
      * Creates a BaseOfficial.
@@ -38,10 +41,21 @@ export class BaseOfficial extends Official
         super(unit);
         this.spawns = [];
         this.creepQueue = [];
+        this.maxWorkers = 3;
     }
 
     public run(): void
     {
+        // do regular creep actions
+        this.creeps.forEach((creep) => this.creepActions(creep));
+
+        // spawn some more creeps if needed
+        // TODO: how to let more essential creeps take priority?
+        if (this.creeps.length < this.maxWorkers)
+        {
+            this.requestCreep([WORK, CARRY, MOVE], this.spawns[0]);
+        }
+
         // early return: no spawns to use and/or no creeps to spawn
         if (!this.spawns.length || !this.creepQueue.length)
         {
@@ -77,6 +91,65 @@ export class BaseOfficial extends Official
             target: target,
             index: this.creepQueue.length
         });
+    }
+
+    /**
+     * Executes required creep actions.
+     *
+     * @param creep Creep to run.
+     */
+    private creepActions(creep: Creep): void
+    {
+        if (creep.isDone)
+        {
+            if (creep.carry[RESOURCE_ENERGY] === 0)
+            {
+                // fill up on energy
+                const storage = this.findStorage(this.room, RESOURCE_ENERGY,
+                    /*favorEmpty=*/false);
+                if (storage)
+                {
+                    creep.goal = Goals.Withdraw(storage, RESOURCE_ENERGY);
+                }
+                else
+                {
+                    // TODO: find somewhere else or wait?
+                    creep.goal = Goals.Null();
+                }
+            }
+            else
+            {
+                // we have energy to use for something
+                // first prioritize construction sites based on range
+                let target: Structure | ConstructionSite =
+                    creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+                if (!target)
+                {
+                    // maybe some things need repair
+                    target = _.min(creep.room.find(FIND_STRUCTURES), (s) =>
+                        s.hits / s.hitsMax);
+                    if (!target)
+                    {
+                        if (this.room.controller)
+                        {
+                            // just go upgrade the controller then
+                            target = this.room.controller;
+                        }
+                        else
+                        {
+                            // TODO
+                            creep.goal = Goals.Null();
+                        }
+                    }
+                }
+                if (target)
+                {
+                    creep.goal = Goals.Build(target);
+                }
+            }
+        }
+
+        creep.run();
     }
 
     /**

@@ -71,7 +71,8 @@ export class Whole
             else
             {
                 // creep is unemployed!
-                // TODO
+                // assign it to the home Unit's base
+                this.units[creep.home.name].base.addCreep(creep);
             }
         });
 

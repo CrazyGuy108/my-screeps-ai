@@ -1,7 +1,7 @@
+import { BuildTarget, BuildGoal } from "goal/BuildGoal";
 import { HarvestTarget, HarvestGoal } from "goal/HarvestGoal";
 import { NullGoal } from "goal/NullGoal";
 import { TransferTarget, TransferGoal } from "goal/TransferGoal";
-import { UpgradeTarget, UpgradeGoal } from "goal/UpgradeGoal";
 import { WithdrawTarget, WithdrawGoal } from "goal/WithdrawGoal";
 
 /**
@@ -23,23 +23,31 @@ export function createGoal(memory: GoalMemory): Goal
         target = Game.getObjectById(memory.options.targetId);
     }
 
-    switch (memory.id)
+    // make sure the target exists first
+    if (target)
     {
-        case HarvestGoal.id:
-            return Goals.Harvest(target as HarvestTarget);
-        case TransferGoal.id:
-            return Goals.Transfer(target as TransferTarget,
-                options.resourceType as ResourceConstant, options.amount);
-        case UpgradeGoal.id:
-            return Goals.Upgrade(target as UpgradeTarget);
-        case WithdrawGoal.id:
-            return Goals.Withdraw(target as WithdrawTarget,
-                options.resourceType as ResourceConstant, options.amount);
-        default:
-            console.log(`Invalid goal id "${memory.id}"!`);
-            // fallthrough
-        case NullGoal.id:
-            return Goals.Null();
+        switch (memory.id)
+        {
+            case BuildGoal.id:
+                return Goals.Build(target as BuildTarget);
+            case HarvestGoal.id:
+                return Goals.Harvest(target as HarvestTarget);
+            case TransferGoal.id:
+                return Goals.Transfer(target as TransferTarget,
+                    options.resourceType as ResourceConstant, options.amount);
+            case WithdrawGoal.id:
+                return Goals.Withdraw(target as WithdrawTarget,
+                    options.resourceType as ResourceConstant, options.amount);
+            default:
+                console.log(`Invalid goal id "${memory.id}"!`);
+                // fallthrough
+            case NullGoal.id:
+                return Goals.Null();
+        }
+    }
+    else
+    {
+        return Goals.Null();
     }
 }
 
@@ -49,12 +57,12 @@ export function createGoal(memory: GoalMemory): Goal
  */
 export const Goals =
 {
+    Build: (target: BuildTarget) => new BuildGoal(target),
     Harvest: (target: HarvestTarget) => new HarvestGoal(target),
     // NullGoal has no fields so it can be safely repeatedly returned
     Null: _.once(() => new NullGoal()),
     Transfer: (target: TransferTarget, resourceType: ResourceConstant,
             amount?: number) => new TransferGoal(target, resourceType, amount),
-    Upgrade: (target: UpgradeTarget) => new UpgradeGoal(target),
     Withdraw: (target: WithdrawTarget, resourceType: ResourceConstant,
             amount?: number) => new WithdrawGoal(target, resourceType, amount)
 };
