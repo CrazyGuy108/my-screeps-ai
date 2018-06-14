@@ -36,7 +36,10 @@ export class HarvestGoal extends Goal
         const error = creep.harvest(this.target);
         if (error === OK)
         {
-            if (_.sum(creep.carry) >= creep.carryCapacity)
+            // current energy isn't reflected until the next tick so need to
+            //  calculate how much energy was harvested
+            if (_.sum(creep.carry) +
+                creep.getActiveBodyparts(WORK) * HARVEST_POWER >= creep.carryCapacity)
             {
                 // the creep is full so we're done here
                 creep.done();
