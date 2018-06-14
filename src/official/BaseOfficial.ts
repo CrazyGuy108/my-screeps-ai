@@ -57,7 +57,7 @@ export class BaseOfficial extends Official
         }
 
         // early return: no spawns to use and/or no creeps to spawn
-        if (!this.spawns.length || !_.isEmpty(this.creepQueues))
+        if (!this.spawns.length || _.isEmpty(this.creepQueues))
         {
             return;
         }
