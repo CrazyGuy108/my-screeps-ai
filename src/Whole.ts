@@ -9,7 +9,7 @@ export class Whole
 {
     /** Contains each Unit, each of which controls a single room. */
     private units: { [roomName: string]: Unit };
-    /** Officials tied to a target RoomObject. */
+    /** Officials tied to a target RoomObject or Room. */
     private officials: { [targetId: string]: Official };
 
     /**
@@ -32,6 +32,9 @@ export class Whole
             // create a Unit to manage that room
             const unit = new Unit(this, room);
             this.units[roomName as string] = unit;
+
+            // add in the BaseOfficial
+            this.officials[roomName as string] = unit.base;
 
             // add in the room controller
             if (room.controller)

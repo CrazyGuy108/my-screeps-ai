@@ -1,7 +1,7 @@
 import { Unit } from "Unit";
 
 /**
- * Controls a single object or structure in a room.
+ * Controls a single object or structure in a Room or the Room itself.
  */
 export abstract class Official
 {

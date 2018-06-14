@@ -23,7 +23,6 @@ type CreepRequest =
  */
 export class BaseOfficial extends Official
 {
-
     /** Spawns managed by this BaseOfficial. */
     public readonly spawns: StructureSpawn[];
     /** Requested creeps. */
@@ -53,7 +52,7 @@ export class BaseOfficial extends Official
         // TODO: how to let more essential creeps take priority?
         if (this.creeps.length < this.maxWorkers)
         {
-            this.requestCreep([WORK, CARRY, MOVE], this.spawns[0]);
+            this.requestCreep([WORK, CARRY, MOVE]);
         }
 
         // early return: no spawns to use and/or no creeps to spawn
@@ -80,6 +79,7 @@ export class BaseOfficial extends Official
      *
      * @param body Body of the creep.
      * @param target Target object. Used to identify the Official it belongs to.
+     * If omitted, defaults to this BaseOfficial (aka its room name).
      */
     public requestCreep(body: BodyPartConstant[], target?: RoomObject): void
     {
@@ -87,7 +87,7 @@ export class BaseOfficial extends Official
         {
             body: body,
             // every RoomObject should have an id except flags
-            targetId: target ? (target as any).id : undefined,
+            targetId: target ? (target as any).id : this.room.name,
             target: target,
             index: this.creepQueue.length
         });
