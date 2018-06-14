@@ -47,8 +47,10 @@ export class MineOfficial extends Official
         if (creepCount < this.maxWorkers)
         {
             // not enough creeps!
-            this.unit.requestCreep([WORK, CARRY, MOVE], Priority.HIGH,
-                this.source);
+            const priority = creepCount === 0
+                ? Priority.URGENT
+                : Priority.MEDIUM;
+            this.unit.requestCreep([WORK, CARRY, MOVE], priority, this.source);
         }
     }
 

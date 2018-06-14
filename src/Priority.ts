@@ -3,6 +3,7 @@
  */
 export enum Priority
 {
+    URGENT,
     HIGH,
     MEDIUM,
     LOW

@@ -43,7 +43,7 @@ export class ControllerOfficial extends Official
         // request a new creep if we don't have enough
         if (creepCount < this.maxUpgraders)
         {
-            this.unit.requestCreep([WORK, CARRY, MOVE], Priority.MEDIUM,
+            this.unit.requestCreep([WORK, CARRY, MOVE], Priority.HIGH,
                 this.controller);
         }
     }
