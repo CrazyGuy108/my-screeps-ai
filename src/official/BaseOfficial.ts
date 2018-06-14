@@ -167,13 +167,14 @@ export class BaseOfficial extends Official
     private spawnActions(spawn: StructureSpawn): void
     {
         // get the highest requested priority
-        const priority = Math.min((this.creepQueues as any).keys());
+        const priority = Math.min(..._.keysIn(this.creepQueues)
+                .map((key) => parseInt(key)));
 
         // prioritize the creep whose target is closest to the spawn
         // FIXME: doesn't consider other spawns that could be closer
         const request = _.min(this.creepQueues[priority], (req) =>
-            req.target ?
-                spawn.pos.getRangeTo(req.target)
+            req.target
+                ?  spawn.pos.getRangeTo(req.target)
                 // creeps without targets are lowest priority
                 : Infinity);
 
